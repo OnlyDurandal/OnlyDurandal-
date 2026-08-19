@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>for annabelle :)</title>
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#f7eef2;color:#3d3037;font-family:Arial,Helvetica,sans-serif;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.card{width:min(91%,590px);min-height:390px;background:#fffafa;border:1px solid #eadde2;border-radius:18px;padding:30px 25px;box-shadow:0 12px 40px #6b4c5a18;text-align:center;position:relative;overflow:hidden}
+h1{font-size:32px;margin:3px 0 14px}h2{font-size:25px;line-height:1.3;margin:18px 0}p{font-size:16px;line-height:1.55}.sub{font-size:13px;color:#9b858e}
+button{font-family:inherit;font-size:16px;border:0;border-radius:12px;padding:12px 20px;cursor:pointer;transition:.25s}
+.yes{background:#e889aa;color:#fff}.no{background:#eee5e9;color:#65535b}
+.row{height:105px;display:flex;align-items:center;justify-content:center;gap:15px;position:relative}.bar{height:3px;background:#eadde2;margin:18px 0}.fill{height:100%;background:#e889aa;transition:.4s}
+.heart{font-size:45px;margin-bottom:7px}.tiny{font-size:12px;color:#aa969e}
+.float{position:absolute;pointer-events:none;animation:up 1.7s ease-out forwards;font-size:24px}@keyframes up{to{transform:translateY(-230px) rotate(18deg);opacity:0}}
+.shake{animation:shake .3s}@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
+.pop{animation:pop .35s}@keyframes pop{50%{transform:scale(1.08)}}
+.fade{opacity:0;transform:scale(.7);pointer-events:none}
+.flash{animation:flash .55s}@keyframes flash{50%{background:#fff0f5}}
+.choice{margin-top:14px}.memory{background:#f9f1f4;border-radius:14px;padding:14px;margin:12px 0}
+
+</style>
+</head>
+<body>
+<div class="card" id="app"></div>
+<script>
+const qs=[
+ ["right, let's start","are you ready for this?","yes"],
+ ["easy one","are you going to have a good birthday?","swap"],
+ ["i'm checking something important","is kai your favourite person?","escape"],
+ ["no pressure btw","will you love kai forever?","fade"],
+ ["very serious question","am i allowed to call you princess forever?","grow"],
+ ["think carefully","would you choose kai again?","vanish"],
+ ["okay, this one might expose you","do you secretly enjoy being spoiled and getting princess treatment?","escape"],
+ ["last one before things get weird","do you deserve the best birthday ever?","swap"]
+];
+let n=-1,yesCount=0,events=0;
+const app=document.getElementById("app");
+
+function home(){
+ app.innerHTML=`<div class="heart">♡</div><h1>hi princess</h1>
+ <p>i made you a tiny birthday thing.</p>
+ <p class="sub">it's probably a terrible idea to trust anything you see on this website.</p>
+ <button class="yes" onclick="start()">okay, show me</button>`;
+}
+function start(){n=0;show()}
+function show(){
+ if(n>=qs.length){finish();return}
+ const [intro,q,type]=qs[n];
+ app.innerHTML=`<div class="sub">${intro}</div><h2>${q}</h2>
+ <div class="row"><button class="yes" id="yes" onclick="clickedYes()">yes</button><button class="no" id="no">no</button></div>
+ <div class="bar"><div class="fill" style="width:${n/qs.length*100}%"></div></div>
+ <div class="sub">page ${n+1} / ${qs.length}</div>`;
+ const b=document.getElementById("no");
+ if(type==="escape"){b.addEventListener("pointerenter",run);b.addEventListener("touchstart",run,{passive:false})}
+ b.onclick=()=>nope(type);
+}
+function clickedYes(){
+ yesCount++;
+ const roll=Math.random();
+ if(roll<.18){hearts();say("okayyy, no hesitation 😭");hold()}
+ else if(roll<.34){say(["correct answer","i knew you'd say that","very good","that's what i wanted to hear","moving on..."][Math.floor(Math.random()*5)]);hold()}
+ else if(roll<.48){tinySecret();hold()}
+ else {next()}
+}
+function hold(){
+ const b=document.getElementById("yes");if(!b)return;
+ b.disabled=true;b.style.opacity=.65;
+ setTimeout(()=>{if(n<qs.length){n++;show()}},850);
+}
+function next(){n++;show()}
+function say(t){
+ const x=document.createElement("div");x.className="tiny";x.textContent=t;
+ document.querySelector(".row").after(x);
+}
+function hearts(){
+ for(let i=0;i<8;i++){let x=document.createElement("span");x.className="float";x.textContent=["♡","♥","✦","♡"][Math.floor(Math.random()*4)];
+ x.style.left=(35+Math.random()*30)+"%";x.style.top=(45+Math.random()*15)+"%";x.style.animationDelay=Math.random()*.25+"s";app.appendChild(x);setTimeout(()=>x.remove(),2100)}
+}
+function tinySecret(){
+ const msgs=["you found absolutely nothing. well done.","secret achievement: pressing yes","this website is being held together by hope","i spent way too long making this","okay carry on :)"];
+ const x=document.createElement("div");x.className="memory pop";x.textContent=msgs[Math.floor(Math.random()*msgs.length)];
+ app.querySelector("h2").after(x);events++;setTimeout(()=>x.remove(),750)
+}
+function nope(type){
+ const b=document.getElementById("no");
+ if(type==="fade"){b.classList.add("fade");setTimeout(()=>{b.textContent="yes";b.className="yes";b.onclick=clickedYes;b.style.opacity=1;b.style.transform="none"},450)}
+ else if(type==="swap"){b.textContent="yes";b.className="yes";b.onclick=clickedYes}
+ else if(type==="grow"){b.style.transform="scale(.55)";setTimeout(()=>b.style.transform="scale(.2)",250);setTimeout(()=>{b.textContent="yes";b.className="yes";b.style.transform="none";b.onclick=clickedYes},650)}
+ else if(type==="vanish"){b.classList.add("fade");setTimeout(()=>{b.style.display="none";say("...yeah, thought so")},300)}
+ else{b.classList.add("shake");setTimeout(()=>b.classList.remove("shake"),350)}
+}
+function run(e){
+ if(e)e.preventDefault();const b=document.getElementById("no");
+ b.style.position="absolute";b.style.left=(8+Math.random()*68)+"%";b.style.top=(8+Math.random()*58)+"%";
+ b.textContent=["nope","nah","nice try","not happening","erm... no"][Math.floor(Math.random()*5)];
+}
+function finish(){
+ app.innerHTML=`<div class="heart">♡</div><h1>okay, you made it</h1>
+ <p class="sub">and yes, you were supposed to click yes every time.</p>
+ <div class="memory"><b>important findings</b><br><br>you are officially allowed to have an amazing birthday.<br>kai is still your favourite person.<br>the no button has been permanently removed.</div>
+ <button class="yes" onclick="finale()">there's more?</button>`;
+}
+function finale(){
+ hearts();
+ setTimeout(()=>{app.innerHTML=`<div class="heart">♡</div><h1>happy birthday, princess</h1>
+ <p>okay, i'll stop messing around now.</p>
+ <p>i wanted to make you something rather than just send you a normal birthday message, even if this is basically a tiny stupid website.</p>
+ <p>i hope your birthday is genuinely amazing. you deserve to have the best day, get spoiled, eat something nice, and just enjoy yourself.</p>
+ <p>thank you for all the little things, all the conversations, all the memories, and for being you.</p>
+ <h2>love you loads :)</h2>
+ <p class="tiny">p.s. yes, i rigged the entire thing.</p>`},900)
+}
+home();
+</script>
+</body>
+</html>
